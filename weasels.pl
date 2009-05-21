@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 use 5.10.0;
 use MooseX::Declare;
-use Text::LevenshteinXS qw(distance);
-use MooseX::AttributeHelpers;
 
 class GOD { # Ironic Isn't It.
     use constant TARGET        => 'METHINKS IT IS LIKE A WEASEL';
@@ -16,9 +14,7 @@ class GOD { # Ironic Isn't It.
 class World {
     use constant SIZE => 50;
     
-    sub _generate (&) {
-        [ sort { $a->fitness <=> $b->fitness } map { $_[0]->() } 1 .. SIZE ];
-    }
+    use MooseX::AttributeHelpers;
 
     has current_generation => (
         isa        => 'ArrayRef[Weasel]',
@@ -30,6 +26,10 @@ class World {
             first => 'best',
         }
     );
+
+    sub _generate (&) {
+        [ sort { $a->fitness <=> $b->fitness } map { $_[0]->() } 1 .. SIZE ];
+    }
 
     method first_generation {  _generate { Weasel->new }    }
 
@@ -49,8 +49,11 @@ class World {
 
 role Mutations {
     requires qw(string parent mutate);
+    
+    use Text::LevenshteinXS qw(distance);
+
     has fitness => ( isa => 'Int', is => 'rw', lazy_build => 1 );
-    method _build_fitness { ::distance( $self->string, GOD::TARGET() ) }    
+    method _build_fitness { distance( $self->string, GOD::TARGET() ) }    
     
     method inherit_string {
         return join '', map { $self->mutate($_) }

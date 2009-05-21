@@ -148,7 +148,7 @@ In our universe fitness is determined by the [Levenshtein][10] distance of the
         
         has fitness => ( isa => 'Int', is => 'rw', lazy_build => 1 );
         
-        method _build_fitness { ::distance( $self->string, GOD::TARGET() ) }    
+        method _build_fitness { distance( $self->string, GOD::TARGET() ) }    
 
 We know we're perfect when our distance from `GOD`s `TARGET` (our fitness) is
 0.
