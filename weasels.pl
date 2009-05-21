@@ -78,7 +78,7 @@ role LockingMutations with Mutations {
     }
 }
 
-class Weasel with LockingMutations {
+class Weasel with NonLockingMutations {
 
     has parent     => ( isa => 'Weasel', is => 'ro', );
     has generation => ( isa => 'Int',    is => 'rw', builder => 'my_generation' );
