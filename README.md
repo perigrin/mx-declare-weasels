@@ -16,7 +16,7 @@ we're gonna use a Modern Perl (5.10+), and we're gonna use some of the new
 sugary syntax from [`MooseX::Declare`][3]
 
 Now in the [code I pilfered the algorithm][4] from we have some global
-parameters. Matt Trout likes to call Singleton objects "God" objects, so we'll
+parameters. [Matt Trout][11] likes to call Singleton objects "God" objects, so we'll
 just borrow that nomenclature here. (The irony of having evolutionary code
 need a GOD doesn't hurt either).
 
@@ -211,3 +211,4 @@ our results
 [8]: http://github.com/perigrin/mx-declare-weasels
 [9]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/Roles.pod
 [10]: http://en.wikipedia.org/wiki/Levenshtein_distance
+[11]: http://www.shadowcat.co.uk/blog/matt-s-trout/
