@@ -13,6 +13,40 @@ class GOD { # Ironic Isn't It.
 }
 
 
+class World {
+    use constant SIZE => 50;
+    
+    sub _generate (&) {
+        [ sort { $a->fitness <=> $b->fitness } map { $_[0]->() } 1 .. SIZE ];
+    }
+
+    has current_generation => (
+        isa        => 'ArrayRef[Weasel]',
+        is         => 'rw',
+        auto_deref => 1,
+        builder    => 'first_generation',
+        metaclass  => 'Collection::List',
+        provides   => {
+            first => 'best',
+        }
+    );
+
+    method first_generation {  _generate { Weasel->new }    }
+
+    method new_generation {
+         $self->current_generation( _generate { $self->best->spawn } );
+    }
+
+    method run {
+        $self->new_generation() until $self->perfect_offspring;
+    }
+
+    method perfect_offspring { $self->best->perfect }
+
+    after new_generation { say $self->best->to_string };
+}
+
+
 role Mutations {
     requires qw(string parent mutate);
     has fitness => ( isa => 'Int', is => 'rw', lazy_build => 1 );
@@ -57,6 +91,8 @@ class Weasel with NonLockingMutations {
         $self->parent->generation + 1;
     }
 
+    method perfect { $self->fitness == 0 }
+
     method spawn { Weasel->new( parent => $self ) }
 
     method to_string {
@@ -65,40 +101,6 @@ class Weasel with NonLockingMutations {
 
 }
 
-class World {
-    use constant SIZE => 50;
-    
-    sub _generate (&) {
-        [ sort { $a->fitness <=> $b->fitness } map { $_[0]->() } 1 .. SIZE ];
-    }
-
-    has current_generation => (
-        isa        => 'ArrayRef[Weasel]',
-        is         => 'rw',
-        auto_deref => 1,
-        lazy_build => 1,
-        builder    => 'first_generation',
-        metaclass  => 'Collection::List',
-        provides   => {
-            first => 'best',
-        }
-    );
-
-    method first_generation {  _generate { Weasel->new }    }
-
-    method new_generation {
-         $self->current_generation( _generate { $self->best->spawn } );
-    }
-
-    method perfect_offspring { $self->best->fitness == 0 }
-
-    method run {
-        $self->new_generation() until $self->perfect_offspring;
-        $self->best->to_string;
-    }
-
-    after new_generation { say $self->best->to_string };
-}
 
 
 World->new->run;
