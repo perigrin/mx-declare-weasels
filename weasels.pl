@@ -14,7 +14,7 @@ class GOD { # Ironic Isn't It.
 
 
 role Mutations {
-    requires qw(string parent);
+    requires qw(string parent mutate);
     has fitness => ( isa => 'Int', is => 'rw', lazy_build => 1 );
     method _build_fitness { ::distance( $self->string, GOD::TARGET() ) }    
     
