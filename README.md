@@ -11,9 +11,9 @@ code][8] will show the right order and will run properly.
     use 5.10.0;
     use MooseX::Declare;
 
-Like any good perl modern script we start out with a `#!` line, state that we're
-gonna use a Modern Perl (5.10+), and we're gonna use some of the new sugary
-syntax from [`MooseX::Declare`][3]
+Like any good perl modern script we start out with a `#!` line, state that
+we're gonna use a Modern Perl (5.10+), and we're gonna use some of the new
+sugary syntax from [`MooseX::Declare`][3]
 
 Now in the [code I pilfered the algorithm][4] from we have some global
 parameters. Matt Trout likes to call Singleton objects "God" objects, so we'll
@@ -28,7 +28,8 @@ need a GOD doesn't hurt either).
         sub RANDOM_LETTER() { ( 'A' .. 'Z', ' ' )[ rand(27) ] }
     }
 
-`DEFAULT_STRING` and `RANDOM_LETTER` are some utility methods we'll use in a bit.
+`DEFAULT_STRING` and `RANDOM_LETTER` are some utility methods we'll use in a
+bit.
 
 So now that we have God we can create the `World`. Our `World` is basically a
 container for evolving generations of objects (in our case `Weasels`). We have
@@ -133,23 +134,46 @@ parent is, and they know how to tell the `World` about themselves.
         }
     }
 
+Now we get to the interesting part of this, the reason we created our own
+little universe. `Weasel`s would never become perfect if they couldn't Mutate.
+
 
     role Mutations {
-        use Text::LevenshteinXS qw(distance);
+        requires qw(string parent mutate);
 
-        requires qw(string parent mutate)
-        ;
+In our universe fitness is determined by the [Levenshtein][10] distance of the
+`Weasel`s string from `GOD`'s target.
+
+        use Text::LevenshteinXS qw(distance);
+        
         has fitness => ( isa => 'Int', is => 'rw', lazy_build => 1 );
         
         method _build_fitness { ::distance( $self->string, GOD::TARGET() ) }    
-    
+
+We know we're perfect when our distance from `GOD`s `TARGET` (our fitness) is
+0.
+
+        method perfect { $self->fitness == 0 }
+
+Mutations are also where we inherit strings from our parents. Strings are
+never inherited cleanly, there's always a chance at mutation. That chance
+however depends on the mutation mechanism we're using
+
         method inherit_string {
             return join '', map { $self->mutate($_) }
                 0..length $self->parent->string;
         }
-        
-        method perfect { $self->fitness == 0 }
     }
+
+Mutations in our world come in two flavors, Non Locking Mutations mean every
+character is free to mutate no matter if it already matches the corresponding
+character in the `TARGET`. Locking Mutations don't change characters that
+already match.
+
+Here are the implementations for each, they're pretty straight forward, and
+mostly the same. If we haven't been hit by a cosmic beam (ie a random number
+is less than `GOD`s `MUTATION_RATE`), return that character unmodified.
+Otherwise return a new random character.
 
     role NonLockingMutations with Mutations {
         sub mutate {
@@ -158,6 +182,9 @@ parent is, and they know how to tell the `World` about themselves.
             return GOD::RANDOM_LETTER;
         }
     }
+
+The only thing that `LockingMutations` changes on this is if we already match
+`GOD`s `TARGET`, return the current character.
 
     role LockingMutations with Mutations {
         sub mutate {        
@@ -168,8 +195,8 @@ parent is, and they know how to tell the `World` about themselves.
         }
     }
 
-
-Finally we start the world up running and see our results
+That's it, everything is implemented. We start the world running and see
+our results
 
     World->new->run;
 
@@ -183,3 +210,4 @@ Finally we start the world up running and see our results
 [7]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/MethodModifiers.pod
 [8]: http://github.com/perigrin/mx-declare-weasels
 [9]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/Roles.pod
+[10]: http://en.wikipedia.org/wiki/Levenshtein_distance
