@@ -16,8 +16,8 @@ we're gonna use a Modern Perl (5.10+), and we're gonna use some of the new
 sugary syntax from [`MooseX::Declare`][3]
 
 Now in the [code I pilfered the algorithm][4] from we have some global
-parameters. [Matt Trout][11] likes to call Singleton objects "God" objects, so
-we'll just borrow that nomenclature here. Technically this isn't a Singleton
+parameters. [Matt Trout][11] likes to call Singleton objects ["God" objects][12], so
+we'll just borrow that nomenclature here. Technically this isn't a [Singleton][13]
 either, but we're gonna abuse things a bit for the sake of a pun.
 
     class GOD {
@@ -212,3 +212,5 @@ our results
 [9]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/Roles.pod
 [10]: http://en.wikipedia.org/wiki/Levenshtein_distance
 [11]: http://www.shadowcat.co.uk/blog/matt-s-trout/
+[12]: http://en.wikipedia.org/wiki/God_object
+[13]: http://en.wikipedia.org/wiki/Singleton_pattern
