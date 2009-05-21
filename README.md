@@ -16,9 +16,9 @@ we're gonna use a Modern Perl (5.10+), and we're gonna use some of the new
 sugary syntax from [`MooseX::Declare`][3]
 
 Now in the [code I pilfered the algorithm][4] from we have some global
-parameters. [Matt Trout][11] likes to call Singleton objects "God" objects, so we'll
-just borrow that nomenclature here. (The irony of having evolutionary code
-need a GOD doesn't hurt either).
+parameters. [Matt Trout][11] likes to call Singleton objects "God" objects, so
+we'll just borrow that nomenclature here. Technically this isn't a Singleton
+either, but we're gonna abuse things a bit for the sake of a pun.
 
     class GOD {
         use constant TARGET        => 'METHINKS IT IS LIKE A WEASEL';
