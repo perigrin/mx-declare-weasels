@@ -78,8 +78,14 @@ role LockingMutations with Mutations {
 class Weasel with NonLockingMutations {
 
     has parent     => ( isa => 'Weasel', is => 'ro', );
+    has generation => ( isa => 'Int',    is => 'rw', builder => 'my_generation' );
+
+    method my_generation {
+        return 0 unless $self->parent;
+        $self->parent->generation + 1;
+    }
+
     has string     => ( isa => 'Str',    is => 'ro', lazy_build => 1 );
-    has generation => ( isa => 'Int',    is => 'rw', lazy_build => 1 );
 
     method _build_string {
         return $self->inherit_string if $self->parent;

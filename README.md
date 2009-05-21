@@ -93,30 +93,44 @@ best in each generation is.
         after new_generation { say $self->best->to_string };
     }
 
-So let's look at the population of our world. 
+So let's look at the population of our world. Ah the `Weasel`, the most
+quintessential of `GOD`'s creations. `Weasel`'s do one thing in life, they
+breed mutants. So our Weasel class composes the [Role][9]
+`NonLockingMutations` which we'll gloss over for a bit and just say "`Weasels`
+can evolve".
 
     class Weasel with NonLockingMutations {
+
+Now I said before that `Weasel`s have a strong sense of ancestory, even though
+the `World` only knows about one generation of `Weasel` at a time, each weasel
+knows exactly who it's parent was, and what generation they belong to.
         
         has parent     => ( isa => 'Weasel', is => 'ro', );
+        has generation => ( isa => 'Int',    is => 'rw', builder => 'my_generation' );
+
+        method my_generation {
+            return 0 unless $self->parent;
+            $self->parent->generation + 1;
+        }
+
+They also have a little genetic string. Which they inherit from their parent
+(unless they're the Ur-`Weasel` in which case they get it from `GOD`).
+        
         has string     => ( isa => 'Str',    is => 'ro', lazy_build => 1 );
-        has generation => ( isa => 'Int',    is => 'rw', lazy_build => 1 );
         
         method _build_string {
             return $self->inherit_string if $self->parent;
             return GOD::DEFAULT_STRING;
         }
-        
-        method _build_generation {
-            return 0 unless $self->parent;
-            $self->parent->generation + 1;
-        }
-        
+
+Finally `Weasel`s can breed, they each have one child and teach it who its
+parent is, and they know how to tell the `World` about themselves.
+
         method spawn { Weasel->new( parent => $self ) }
         
         method to_string {
             "${\sprintf('%04d', $self->generation)}:${ \$self->string } (${\sprintf('%02d', $self->fitness)})";
         }
-        
     }
 
 
@@ -168,3 +182,4 @@ Finally we start the world up running and see our results
 [6]: http://en.wikipedia.org/wiki/Kwisatz_Haderach
 [7]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/MethodModifiers.pod
 [8]: http://github.com/perigrin/mx-declare-weasels
+[9]: http://search.cpan.org/dist/Moose/lib/Moose/Manual/Roles.pod
