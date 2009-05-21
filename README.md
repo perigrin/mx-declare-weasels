@@ -24,7 +24,7 @@ need a GOD doesn't hurt either).
         use constant TARGET        => 'METHINKS IT IS LIKE A WEASEL';
         use constant MUTATION_RATE => 0.09;
 
-        sub DEFAULT_STRING() { join '', map { RANDOM_LETTER() } 0..length TARGET }
+        sub DEFAULT_STRING() { join '', map { RANDOM_LETTER() } 0..(length TARGET) -1 }
         sub RANDOM_LETTER() { ( 'A' .. 'Z', ' ' )[ rand(27) ] }
     }
 
@@ -161,7 +161,7 @@ however depends on the mutation mechanism we're using
 
         method inherit_string {
             return join '', map { $self->mutate($_) }
-                0..length $self->parent->string;
+                0..(length $self->parent->string) - 1;
         }
     }
 

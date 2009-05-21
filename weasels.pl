@@ -6,7 +6,7 @@ class GOD { # Ironic Isn't It.
     use constant TARGET        => 'METHINKS IT IS LIKE A WEASEL';
     use constant MUTATION_RATE => 0.09;
 
-    sub DEFAULT_STRING() { join '', map { RANDOM_LETTER() } 0..length TARGET }
+    sub DEFAULT_STRING() { join '', map { RANDOM_LETTER() } 0..(length TARGET) -1 }
     sub RANDOM_LETTER() { ( 'A' .. 'Z', ' ' )[ rand(27) ] }
 }
 
@@ -57,7 +57,7 @@ role Mutations {
     
     method inherit_string {
         return join '', map { $self->mutate($_) }
-            0..length $self->parent->string;
+            0..(length $self->parent->string) - 1;
     }
 }
 
@@ -78,7 +78,7 @@ role LockingMutations with Mutations {
     }
 }
 
-class Weasel with NonLockingMutations {
+class Weasel with LockingMutations {
 
     has parent     => ( isa => 'Weasel', is => 'ro', );
     has generation => ( isa => 'Int',    is => 'rw', builder => 'my_generation' );
